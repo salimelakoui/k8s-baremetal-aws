@@ -33,12 +33,3 @@ output "node_3_private" {
 output "node_3_public" {
   value = aws_instance.node_3.public_ip
 }
-
-output "key_public" {
-  value = tls_private_key.ssh_key.public_key_pem
-}
-
-output "key_private" {
-  value = tls_private_key.ssh_key.private_key_pem
-  sensitive = true
-}

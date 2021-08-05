@@ -7,7 +7,8 @@ This project uses :
 * AWS
 
 To use it :
-* configure AWS 
+* configure AWS with a profil
+* update file variable.tf with the right profile / region / ami (debian)-
 * terraform init
 * terraform apply
 * terraform output

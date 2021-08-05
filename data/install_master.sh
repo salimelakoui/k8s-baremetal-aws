@@ -1,14 +1,10 @@
-#!/bin/bash
-set -o xtrace
 
 MASTER_IP="`curl http://169.254.169.254/latest/meta-data/local-ipv4`"
 MASTER_HOSTNAME="`curl http://169.254.169.254/latest/meta-data/public-hostname`"
 
 # kub master
-kubeadm config images pull
-#kubeadm init "--pod-network-cidr=192.168.0.0/16"
-kubeadm init --pod-network-cidr=10.244.0.0/16 --service-dns-domain "k8s" --apiserver-advertise-address $MASTER_IP
-#kubeadm init --pod-network-cidr 192.168.0.0/16 --service-cidr 10.96.0.0/12 --service-dns-domain "k8s" --apiserver-advertise-address $MASTER_IP 
+sudo kubeadm config images pull
+sudo kubeadm init --pod-network-cidr=10.244.0.0/16 --service-dns-domain "k8s" --apiserver-advertise-address $MASTER_IP
 
 # for current user
 mkdir -p $HOME/.kube
@@ -16,14 +12,9 @@ sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
 sudo chown $(id -u):$(id -g) $HOME/.kube/config
 
 # kub for root
-mkdir -p /root/.kube
+sudo mkdir -p /root/.kube
 sudo cp -i /etc/kubernetes/admin.conf /root/.kube/config
 sudo chown root:root /root/.kube/config
-
-# kub for admin
-mkdir -p /home/admin/.kube
-sudo cp -i /etc/kubernetes/admin.conf /home/admin/.kube/config
-sudo chown admin:admin /home/admin/.kube/config
 
 # install Flannel
 kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
@@ -43,12 +34,6 @@ echo "deb https://baltocdn.com/helm/stable/debian/ all main" | sudo tee /etc/apt
 sudo apt-get update
 sudo apt-get install -y helm
 
-# NFS
-apt install -y nfs-kernel-server
-mkdir /nfs-export
-echo "/nfs-export               10.0.0.0/8(rw,sync,no_root_squash,no_subtree_check)" >> /etc/exports
-exportfs -a
-
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/controller-v1.0.0-beta.1/deploy/static/provider/baremetal/deploy.yaml
 kubectl wait --for=condition=Available deployment/ingress-nginx-controller -n ingress-nginx  --timeout=60s
 kubectl delete -A ValidatingWebhookConfiguration ingress-nginx-admission
@@ -63,21 +48,18 @@ openssl req -new -sha256 -newkey rsa:2048 -nodes -out mydomain.csr -keyout mydom
 # Creating a Self-Signed Certificate (CRT)
 openssl x509 -req -days 365 -in mydomain.csr -signkey mydomain.key -out mydomain.crt
 # Append KEY and CRT to mydomain.pem
-sudo bash -c 'cat mydomain.key mydomain.crt >> /etc/ssl/private/mydomain.pem'
-cat mydomain.key mydomain.crt >> /etc/ssl/private/mydomain.pem
+sudo cat mydomain.key mydomain.crt | sudo tee -a /etc/ssl/private/mydomain.pem
 
 # HA PROXY
 sudo apt install -y haproxy
 
-cat >> /etc/sysctl.conf <<EOF
-net.ipv4.ip_nonlocal_bind = 1
-EOF
+echo "net.ipv4.ip_nonlocal_bind = 1" | sudo tee -a /etc/sysctl.conf
 
 ##backup the current file
-mv /etc/haproxy/haproxy.cfg{,.back}
+sudo mv /etc/haproxy/haproxy.cfg{,.back}
 
 ## Edit the file
-cat > /etc/haproxy/haproxy.cfg << EOF
+sudo cat > /tmp/haproxy.cfg << EOF
 global
      user haproxy
      group haproxy
@@ -117,6 +99,7 @@ backend backend_https
 
 EOF
 
+sudo cp /tmp/haproxy.cfg /etc/haproxy/haproxy.cfg
 sudo service haproxy restart
 
 ## TESTING
@@ -130,7 +113,7 @@ kubectl wait --for=condition=Available deployment/frontend  --timeout=60s
 kubectl wait --for=condition=Available deployment/backend  --timeout=60s
 
 ## Edit the file
-cat > /root/frontend-ingress.yml << EOF
+cat > ~/frontend-ingress.yml << EOF
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -152,16 +135,15 @@ spec:
                 number: 80
 EOF
 
-kubectl apply -f /root/frontend-ingress.yml
+kubectl apply -f ~/frontend-ingress.yml
 
 ## DASHBOARD
-
 
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.2.0/aio/deploy/recommended.yaml
 
 kubectl wait --for=condition=Available deployment/kubernetes-dashboard -n kubernetes-dashboard  --timeout=60s
 
-cat > /root/dashboard.yml << EOF
+cat > ~/dashboard.yml << EOF
 kind: Deployment
 apiVersion: apps/v1
 metadata:
@@ -227,11 +209,11 @@ spec:
           effect: NoSchedule
 EOF
 
-kubectl apply -f /root/dashboard.yml
+kubectl apply -f ~/dashboard.yml
 
 kubectl wait --for=condition=Available deployment/kubernetes-dashboard -n kubernetes-dashboard  --timeout=60s
 
-cat > /root/dashboard-ingress.yml << EOF
+cat > ~/dashboard-ingress.yml << EOF
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -255,5 +237,5 @@ spec:
                 number: 443        
 EOF
 
-kubectl apply -f /root/dashboard-ingress.yml
+kubectl apply -f ~/dashboard-ingress.yml
 kubectl create clusterrolebinding deployment-controller --clusterrole=cluster-admin --serviceaccount=kubernetes-dashboard:kubernetes-dashboard

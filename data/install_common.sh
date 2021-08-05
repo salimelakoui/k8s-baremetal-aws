@@ -5,14 +5,10 @@ set -o xtrace
 K8S_VERSION="1.21.3-00"
 
 # Updating & Upgrading
-apt-get update && apt-get upgrade -y
-
-echo ${private_key}
-echo ${public_key}
-
+sudo apt-get update && sudo apt-get upgrade -y
 
 # SSH
-cat > /root/.ssh/id_rsa <<EOF
+cat > /home/admin/.ssh/id_rsa <<EOF
 -----BEGIN OPENSSH PRIVATE KEY-----
 b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAACFwAAAAdzc2gtcn
 NhAAAAAwEAAQAAAgEA2aY8KVT5GfyRl2NqOTFOg3Y/8CJXfBupzi7MaVQZjtIf7GnpBehi
@@ -63,65 +59,67 @@ Wf2cdFKxAFBW6yHTZRR6WHzYXk3ydTKXZw96kPCLYohL3n2amshzR+JzPV2TXW10XaUmYz
 Nk+W2ceFfkMAAAAVYWRtaW5AaXAtMTcyLTMyLTQtMTgyAQIDBAUG
 -----END OPENSSH PRIVATE KEY-----
 EOF
-echo "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDZpjwpVPkZ/JGXY2o5MU6Ddj/wIld8G6nOLsxpVBmO0h/saekF6GKAgkZZ44F7xYYLG2i9rtQ7RGtlKReWHJFaPY9d52HLJpEYWAL6aCDzjSyy/vYMQG/tE7MSWcYprG9sZaNg5lNrvkt5deY4Ptxwj15StTmN2p48WxpwbwZofgsA2ZqHtf0urng0Ki0Y5venvtFoq5VzYK5NXTp9ma5TRDFZuXd/zCWE8+dq59AeuzoGkeKQVSeXz2+xyxTKlzrGKfXTK1XidihDrx/kFP9WlFLg7fopCT0gibvb0/H+admh+GgOs7GlN2mhAJyEV530So4kFgQwZLJ1L8kCfiHfPiXnu9GQzBwBIbM3YQk6NunvZIEwE5c1tMo2+E7nvu1kcJxuwjLJz3p6X4g+gAQnOr8R63FbB/bNIeRTkqA0cPxdUFKG4Fe46FG4E9ux3KTLC1MtwNL8VLDMRibvYmf1XB/wg7KN5w4n5Dx/jRxkn4rTqOK15GkH3QRsKd0A1XiLBdwtDUyNmvwpMsIfHav2pU6nEGRx+3lxy8xCeGem8vTlVP2olGzGBowg/DvSZHkWgaMaSByrE/1kQTCXO4PwDZhu1ejlcT9h+/hzABuN2IsYlER7q3GRmvXvU4DvHzPfpebFF4VnwFBovA5QW/xJExkPGzvsJhXy1RycPEu3Vw== admin@ip-172-32-4-182" > /root/.ssh/id_rsa.pub
-cat /root/.ssh/id_rsa.pub >> /root/.ssh/authorized_keys
-chown root /root/.ssh/id_rsa.pub /root/.ssh/id_rsa /root/.ssh/authorized_keys
-chmod 600 /root/.ssh/id_rsa.pub /root/.ssh/id_rsa /root/.ssh/authorized_keys
+echo "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDZpjwpVPkZ/JGXY2o5MU6Ddj/wIld8G6nOLsxpVBmO0h/saekF6GKAgkZZ44F7xYYLG2i9rtQ7RGtlKReWHJFaPY9d52HLJpEYWAL6aCDzjSyy/vYMQG/tE7MSWcYprG9sZaNg5lNrvkt5deY4Ptxwj15StTmN2p48WxpwbwZofgsA2ZqHtf0urng0Ki0Y5venvtFoq5VzYK5NXTp9ma5TRDFZuXd/zCWE8+dq59AeuzoGkeKQVSeXz2+xyxTKlzrGKfXTK1XidihDrx/kFP9WlFLg7fopCT0gibvb0/H+admh+GgOs7GlN2mhAJyEV530So4kFgQwZLJ1L8kCfiHfPiXnu9GQzBwBIbM3YQk6NunvZIEwE5c1tMo2+E7nvu1kcJxuwjLJz3p6X4g+gAQnOr8R63FbB/bNIeRTkqA0cPxdUFKG4Fe46FG4E9ux3KTLC1MtwNL8VLDMRibvYmf1XB/wg7KN5w4n5Dx/jRxkn4rTqOK15GkH3QRsKd0A1XiLBdwtDUyNmvwpMsIfHav2pU6nEGRx+3lxy8xCeGem8vTlVP2olGzGBowg/DvSZHkWgaMaSByrE/1kQTCXO4PwDZhu1ejlcT9h+/hzABuN2IsYlER7q3GRmvXvU4DvHzPfpebFF4VnwFBovA5QW/xJExkPGzvsJhXy1RycPEu3Vw== admin@ip-172-32-4-182" | tee /home/admin/.ssh/id_rsa.pub
+sudo cp /home/admin/.ssh/id_rsa.pub /root/.ssh/id_rsa.pub
+sudo cp /home/admin/.ssh/id_rsa /root/.ssh/id_rsa
 
-cp /root/.ssh/id_rsa /home/admin/.ssh
-cp /root/.ssh/id_rsa.pub /home/admin/.ssh
-cat /root/.ssh/id_rsa.pub >> /home/admin/.ssh/authorized_keys
+sudo cat /root/.ssh/id_rsa.pub | sudo tee -a /root/.ssh/authorized_keys
+sudo chown root /root/.ssh/id_rsa.pub /root/.ssh/id_rsa /root/.ssh/authorized_keys
+sudo chmod 600 /root/.ssh/id_rsa.pub /root/.ssh/id_rsa /root/.ssh/authorized_keys
+
+sudo cat /root/.ssh/id_rsa.pub | tee -a /home/admin/.ssh/authorized_keys
 chown admin:admin /home/admin/.ssh/id_rsa.pub /home/admin/.ssh/id_rsa /home/admin/.ssh/authorized_keys
 chmod 600 /home/admin/.ssh/id_rsa.pub /home/admin/.ssh/id_rsa /home/admin/.ssh/authorized_keys
 
+# Inclusing extra key 
+echo "${extra_key}" | tee -a /home/admin/.ssh/authorized_keys
+sudo echo "${extra_key}" | tee -a /home/admin/.ssh/authorized_keys
 
 # GENERAL
-apt-get update
 sudo apt-get -y install git htop nmap
 
 #Docker
 sudo apt-get install -y apt-transport-https ca-certificates curl gnupg lsb-release
 sudo curl -fsSL https://download.docker.com/linux/debian/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
-sudo echo "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/debian $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+sudo echo "deb [arch=amd64 signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/debian $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list 
 sudo apt-get update
 sudo apt-get install -y docker-ce docker-ce-cli containerd.io
-swapoff -a;
-echo '{ "exec-opts": ["native.cgroupdriver=systemd"] }' > /etc/docker/daemon.json
-systemctl restart docker
+sudo swapoff -a;
+sudo echo '{ "exec-opts": ["native.cgroupdriver=systemd"] }' | sudo tee /etc/docker/daemon.json
+sudo systemctl restart docker
 
 # kub installation
 sudo modprobe br_netfilter #Permettre à iptables de voir le trafic ponté
 sudo lsmod | grep br_netfilter
-sudo echo "net.bridge.bridge-nf-call-ip6tables = 1" >> /etc/sysctl.d/k8s.conf
-sudo echo "net.bridge.bridge-nf-call-iptables = 1" >> /etc/sysctl.d/k8s.conf
+sudo echo "net.bridge.bridge-nf-call-ip6tables = 1" | sudo tee -a /etc/sysctl.d/k8s.conf
+sudo echo "net.bridge.bridge-nf-call-iptables = 1" | sudo tee -a /etc/sysctl.d/k8s.conf
 sudo sysctl --system
 sudo apt-get update && sudo apt-get install -y apt-transport-https curl
 sudo curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
-sudo echo "deb https://apt.kubernetes.io/ kubernetes-xenial main" >> /etc/apt/sources.list.d/kubernetes.list
+sudo echo "deb https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee -a /etc/apt/sources.list.d/kubernetes.list
 sudo apt-get update
 sudo apt-get install -y kubelet=$K8S_VERSION kubeadm=$K8S_VERSION kubectl=$K8S_VERSION
 sudo apt-mark hold kubelet kubeadm kubectl
 
 # CONVERT
 curl -LO https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl-convert
-install -o root -g root -m 0755 kubectl-convert /usr/local/bin/kubectl-convert
+sudo install -o root -g root -m 0755 kubectl-convert /usr/local/bin/kubectl-convert
 
-# kubeadm: la commande pour initialiser le cluster.
-# kubelet: le composant qui s'exécute sur toutes les machines de votre cluster et fait des actions comme le démarrage des pods et des conteneurs.
-# kubectl: la ligne de commande utilisée pour parler à votre cluster.
-
-kubectl completion bash > /etc/bash_completion.d/kubectl
+sudo kubectl completion bash | sudo tee /etc/bash_completion.d/kubectl
 
 # kub for root
-echo "alias kc=kubectl" >> /root/.bashrc
-echo "alias ke=kubectl" >> /root/.bashrc
-echo "alias ka=kubeadm" >> /root/.bashrc
-echo ". /etc/bash_completion" >> /root/.bashrc
-echo 'complete -F __start_kubectl kc' >> /root/.bashrc
+sudo echo "alias kc=kubectl" | sudo tee -a /root/.bashrc
+sudo echo "alias ke=kubectl" | sudo tee -a /root/.bashrc
+sudo echo "alias ka=kubeadm" | sudo tee -a /root/.bashrc
+sudo echo ". /etc/bash_completion" | sudo tee -a /root/.bashrc
+sudo echo 'complete -F __start_kubectl kc' | sudo tee -a /root/.bashrc
+sudo echo 'set ts=2 sts=2 sw=2' | sudo tee -a /root/.vimrc
 
 # kub for admin
-echo "alias kc=kubectl" >> /home/admin/.bashrc
-echo "alias ke=kubelet" >> /home/admin/.bashrc
-echo "alias ka=kubeadm" >> /home/admin/.bashrc
-echo ". /etc/bash_completion" >> /home/admin/.bashrc
-echo 'complete -F __start_kubectl kc' >> /home/admin/.bashrc
+echo "alias kc=kubectl" | tee -a /home/admin/.bashrc
+echo "alias ke=kubelet" | tee -a /home/admin/.bashrc
+echo "alias ka=kubeadm" | tee -a /home/admin/.bashrc
+echo ". /etc/bash_completion" | tee -a /home/admin/.bashrc
+echo 'complete -F __start_kubectl kc' | tee -a /home/admin/.bashrc
+echo 'set ts=2 sts=2 sw=2' |  tee -a /home/admin/.vimrc
+

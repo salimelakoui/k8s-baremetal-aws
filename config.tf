@@ -7,15 +7,6 @@ terraform {
   }
 }
 
-variable "region" {
-  description = "Target region"
-  default     = "eu-west-3"
-}
-
-variable "profile" {
-  description = "The profile you want to use"
-  default     = "default"
-}
 
 provider "aws" {
   region  = var.region
