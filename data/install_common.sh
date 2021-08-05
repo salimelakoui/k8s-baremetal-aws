@@ -7,6 +7,10 @@ K8S_VERSION="1.21.3-00"
 # Updating & Upgrading
 apt-get update && apt-get upgrade -y
 
+echo ${private_key}
+echo ${public_key}
+
+
 # SSH
 cat > /root/.ssh/id_rsa <<EOF
 -----BEGIN OPENSSH PRIVATE KEY-----

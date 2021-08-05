@@ -12,8 +12,8 @@ data "template_file" "install_master" {
     ip_node_1 = "${aws_instance.node_1.private_ip}"
     ip_node_2 = "${aws_instance.node_2.private_ip}"
     ip_node_3 = "${aws_instance.node_3.private_ip}"
-    public_key = "${tls_private_key.ssh_key.public_key_pem}"
-    private_key = "${tls_private_key.ssh_key.private_key_pem}"
+    public_key = "${tls_private_key.ssh_key.public_key_openssh}"
+    private_key = "${tls_private_key.ssh_key.private_key_openssh}"
   }
 }
 
