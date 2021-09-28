@@ -76,7 +76,7 @@ echo "${extra_key}" | tee -a /home/admin/.ssh/authorized_keys
 sudo echo "${extra_key}" | tee -a /home/admin/.ssh/authorized_keys
 
 # GENERAL
-sudo apt-get -y install git htop nmap
+sudo apt-get -y install git htop nmap jq
 
 #Docker
 sudo apt-get install -y apt-transport-https ca-certificates curl gnupg lsb-release
@@ -122,4 +122,24 @@ echo "alias ka=kubeadm" | tee -a /home/admin/.bashrc
 echo ". /etc/bash_completion" | tee -a /home/admin/.bashrc
 echo 'complete -F __start_kubectl kc' | tee -a /home/admin/.bashrc
 echo 'set ts=2 sts=2 sw=2' |  tee -a /home/admin/.vimrc
+
+# NFS
+sudo mkdir /opt2
+sudo apt-get -y install git nfs-common vim nmap default-mysql-client htop wget bash-completion zip unzip net-tools iotop bmon iptraf nethogs fail2ban sysstat netcat
+sudo mount -t nfs -o nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport ${efs_dns}:/  /opt2
+echo ${efs_dns}:/ /opt2 nfs4 defaults,_netdev 0 0  | tee -a /etc/fstab
+
+# Certs
+sudo mkdir -p /opt2/certs
+sudo mkdir -p /opt2/registry
+sudo openssl req -newkey rsa:4096 -nodes -sha256 -keyout /opt2/certs/registry.key -x509 -days 365 -out /opt2/certs/registry.crt -subj "/C=FR/ST=test/L=test/O=test/OU=test/CN=test"
+sudo cp /opt/certs/registry.crt /etc/pki/ca-trust/source/anchors/
+sudo update-ca-trust
+sudo systemctl restart docker
+
+
+# K Compose
+curl -L https://github.com/kubernetes/kompose/releases/download/v1.22.0/kompose-linux-amd64 -o kompose
+chmod +x kompose
+sudo mv ./kompose /usr/local/bin/kompose
 

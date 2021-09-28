@@ -102,43 +102,7 @@ EOF
 sudo cp /tmp/haproxy.cfg /etc/haproxy/haproxy.cfg
 sudo service haproxy restart
 
-## TESTING
-
-kubectl apply -f https://k8s.io/examples/service/access/backend-deployment.yaml
-kubectl apply -f https://k8s.io/examples/service/access/backend-service.yaml
-kubectl apply -f https://k8s.io/examples/service/access/frontend-deployment.yaml
-kubectl apply -f https://k8s.io/examples/service/access/frontend-service.yaml
-
-kubectl wait --for=condition=Available deployment/frontend  --timeout=60s
-kubectl wait --for=condition=Available deployment/backend  --timeout=60s
-
-## Edit the file
-cat > ~/frontend-ingress.yml << EOF
----
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  annotations:
-    kubernetes.io/ingress.class: nginx
-  name: frontend
-spec:
-  rules:
-    - host: $MASTER_HOSTNAME
-      http:
-        paths:
-        - path: /frontend
-          pathType: Prefix
-          backend:
-            service:
-              name: frontend
-              port:
-                number: 80
-EOF
-
-kubectl apply -f ~/frontend-ingress.yml
-
 ## DASHBOARD
-
 kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.2.0/aio/deploy/recommended.yaml
 
 kubectl wait --for=condition=Available deployment/kubernetes-dashboard -n kubernetes-dashboard  --timeout=60s
@@ -239,3 +203,71 @@ EOF
 
 kubectl apply -f ~/dashboard-ingress.yml
 kubectl create clusterrolebinding deployment-controller --clusterrole=cluster-admin --serviceaccount=kubernetes-dashboard:kubernetes-dashboard
+
+
+### REGISTRY
+
+sudo cat > ~/private-registry.yml << EOF
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: private-repository-k8s
+  name: private-repository-k8s
+spec:
+  ports:
+  - port: 5000
+    nodePort: 31320
+    protocol: TCP
+    targetPort: 5000
+  selector:
+    app: private-repository-k8s
+  type: NodePort
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: private-repository-k8s
+  labels:
+    app: private-repository-k8s
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: private-repository-k8s
+  template:
+    metadata:
+      labels:
+        app: private-repository-k8s
+    spec:
+      volumes:
+      - name: certs-vol
+        hostPath:
+          path: /opt2/certs
+          type: Directory
+      - name: registry-vol
+        hostPath:
+          path: /opt2/registry
+          type: Directory
+
+      containers:
+        - image: registry:2
+          name: private-repository-k8s
+          imagePullPolicy: IfNotPresent
+          env:
+          - name: REGISTRY_HTTP_TLS_CERTIFICATE
+            value: "/certs/registry.crt"
+          - name: REGISTRY_HTTP_TLS_KEY
+            value: "/certs/registry.key"
+          ports:
+            - containerPort: 5000
+          volumeMounts:
+          - name: certs-vol
+            mountPath: /certs
+          - name: registry-vol
+            mountPath: /var/lib/registry
+EOF
+
+
+kubectl create -f ~/private-registry.yml
+

@@ -9,6 +9,7 @@ data "template_file" "install_master" {
     ip_node_2 = "${aws_instance.node_2.private_ip}"
     ip_node_3 = "${aws_instance.node_3.private_ip}"
     extra_key = "${var.extra_key}"
+    efs_dns = "${aws_efs_file_system.efs_prod.dns_name}"
   }
 }
 
@@ -17,6 +18,7 @@ data "template_file" "install_node" {
 
   vars = {
     extra_key = "${var.extra_key}"
+    efs_dns = "${aws_efs_file_system.efs_prod.dns_name}"
   }
 }
 
