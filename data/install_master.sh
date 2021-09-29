@@ -204,6 +204,8 @@ EOF
 kubectl apply -f ~/dashboard-ingress.yml
 kubectl create clusterrolebinding deployment-controller --clusterrole=cluster-admin --serviceaccount=kubernetes-dashboard:kubernetes-dashboard
 
+### METRICS
+kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
 
 ### REGISTRY
 

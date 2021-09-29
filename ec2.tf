@@ -64,6 +64,16 @@ resource "aws_instance" "master" {
     host        = self.public_ip
   }
 
+   root_block_device {
+    volume_size           = "20"
+    volume_type           = "gp2"
+    delete_on_termination = true
+
+    tags = {
+      "Name" = "SEL - Web PreProd"
+    }
+  }
+
   tags = {
     "Name" = "SEL - Master"
   }
@@ -110,6 +120,16 @@ resource "aws_instance" "node_1" {
     host        = self.public_ip
   }
 
+  root_block_device {
+    volume_size           = "20"
+    volume_type           = "gp2"
+    delete_on_termination = true
+
+    tags = {
+      "Name" = "SEL - Web PreProd"
+    }
+  }
+
   tags = {
     "Name" = "SEL - Node 1"
   }
@@ -153,6 +173,16 @@ resource "aws_instance" "node_2" {
     password    = ""
     private_key = "${tls_private_key.tf.private_key_pem}"
     host        = self.public_ip
+  }
+
+  root_block_device {
+    volume_size           = "20"
+    volume_type           = "gp2"
+    delete_on_termination = true
+
+    tags = {
+      "Name" = "SEL - Web PreProd"
+    }
   }
    
   tags = {
@@ -198,6 +228,16 @@ resource "aws_instance" "node_3" {
     password    = ""
     private_key = "${tls_private_key.tf.private_key_pem}"
     host        = self.public_ip
+  }
+
+  root_block_device {
+    volume_size           = "20"
+    volume_type           = "gp2"
+    delete_on_termination = true
+
+    tags = {
+      "Name" = "SEL - Web PreProd"
+    }
   }
 
   tags = {
