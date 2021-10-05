@@ -2,7 +2,7 @@
 # CREATING CONFIGURATION FILES
 
 data "template_file" "install_master" {
-  template = "${format("%s%s", file("data/install_common.sh"), file("data/install_master.sh"))}"
+  template = "${format("%s%s%s%s%s%s%s", file("data/install_common.sh"), file("data/install_master.sh"), file("data/install_metric.sh"), file("data/install_dashboard.sh"), file("data/install_istio.sh"), file("data/install_ha.sh"), file("data/install_registry.sh") )}"
 
   vars = {
     ip_node_1 = "${aws_instance.node_1.private_ip}"

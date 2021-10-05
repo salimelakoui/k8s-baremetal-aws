@@ -111,17 +111,18 @@ sudo kubectl completion bash | sudo tee /etc/bash_completion.d/kubectl
 sudo echo "alias kc=kubectl" | sudo tee -a /root/.bashrc
 sudo echo "alias ke=kubectl" | sudo tee -a /root/.bashrc
 sudo echo "alias ka=kubeadm" | sudo tee -a /root/.bashrc
+sudo echo "export do='--dry-run=client -oyaml'" | sudo tee -a /root/.bashrc
+sudo echo "export kl='--force --grace-period=0'" | sudo tee -a /root/.bashrc
+sudo echo "export kr='run -it --rm --restart=Never'" | sudo tee -a /root/.bashrc
 sudo echo ". /etc/bash_completion" | sudo tee -a /root/.bashrc
 sudo echo 'complete -F __start_kubectl kc' | sudo tee -a /root/.bashrc
 sudo echo 'set ts=2 sts=2 sw=2' | sudo tee -a /root/.vimrc
+sudo echo ':set et|retab' | sudo tee -a /root/.vimrc
 
 # kub for admin
-echo "alias kc=kubectl" | tee -a /home/admin/.bashrc
-echo "alias ke=kubelet" | tee -a /home/admin/.bashrc
-echo "alias ka=kubeadm" | tee -a /home/admin/.bashrc
-echo ". /etc/bash_completion" | tee -a /home/admin/.bashrc
-echo 'complete -F __start_kubectl kc' | tee -a /home/admin/.bashrc
-echo 'set ts=2 sts=2 sw=2' |  tee -a /home/admin/.vimrc
+sudo cp /root/.bashrc /home/admin/.bashrc
+sudo cp /root/.vimrc /home/admin/.vimrc
+sudo chown admin:admin /home/admin/.bashrc /home/admin/.vimrc
 
 # NFS
 sudo mkdir /opt2
